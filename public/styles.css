@@ -1,0 +1,8 @@
+/* Transiciones suaves en las filas de la tabla */
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(51, 65, 85, 0.4);
+}
