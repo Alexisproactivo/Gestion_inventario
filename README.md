@@ -20,7 +20,7 @@ Aplicación web para control de inventario con sincronización en tiempo real a 
 
 El sistema implementa el principio de **Responsabilidad Única (SOLID)** desacoplando la lógica de negocio, el acceso a datos y las rutas:
 
-\`\`\`text
+```text
 gestion_inventario/
 ├── src/
 │   ├── config/          # Instancia y pool de conexión a PostgreSQL
@@ -34,9 +34,7 @@ gestion_inventario/
 ├── .env                 # Variables de entorno seguras (no versionadas)
 ├── server.js            # Punto de entrada y montaje de middlewares
 └── package.json
-\`\`\`
-
----
+```
 
 ## 🔐 Seguridad y Buenas Prácticas
 
@@ -60,23 +58,23 @@ gestion_inventario/
 ## 💻 Ejecución en Local
 
 1. Clonar el repositorio:
-   \`\`\`bash
-   git clone https://github.com/Alexisproactivo/Gestion_inventario.git
-   cd Gestion_inventario
-   \`\`\`
+```bash
+git clone [https://github.com/Alexisproactivo/Gestion_inventario.git](https://github.com/Alexisproactivo/Gestion_inventario.git)
+cd Gestion_inventario
+```
 
 2. Instalar dependencias:
-   \`\`\`bash
-   npm install
-   \`\`\`
+```bash
+npm install
+```
 
 3. Configurar el archivo `.env` en la raíz:
-   \`\`\`env
-   DATABASE_URL=tu_cadena_de_conexion_a_postgresql
-   PORT=3000
-   \`\`\`
+```env
+DATABASE_URL=tu_cadena_de_conexion_a_postgresql
+PORT=3000
+```
 
 4. Iniciar el servidor:
-   \`\`\`bash
-   node server.js
-   \`\`\`
+```bash
+node server.js
+```
