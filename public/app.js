@@ -1,9 +1,15 @@
+// Referencias a elementos del DOM
 const tablaProductos = document.getElementById('tabla-productos');
 const statTotal = document.getElementById('stat-total');
 const statStock = document.getElementById('stat-stock');
 const statValor = document.getElementById('stat-valor');
 const badgeContador = document.getElementById('badge-contador');
 
+// Elementos de búsqueda y filtros
+const inputBusqueda = document.getElementById('input-busqueda');
+const selectCategoria = document.getElementById('select-categoria');
+
+// Elementos del Modal
 const modal = document.getElementById('modal-producto');
 const btnAbrirModal = document.getElementById('btn-abrir-modal');
 const btnCerrarModal = document.getElementById('btn-cerrar-modal');
@@ -12,14 +18,17 @@ const formNuevo = document.getElementById('form-nuevo-producto');
 const inputId = document.getElementById('input-id');
 const modalTitulo = modal.querySelector('h3');
 
+// Estado local de datos
 let productosLocales = [];
 
+// 1. Cargar productos desde el Backend
 async function cargarProductos() {
   try {
     const respuesta = await fetch('/api/productos');
     productosLocales = await respuesta.json();
 
-    renderizarTabla(productosLocales);
+    poblarCategorias(productosLocales);
+    aplicarFiltros(); // Renderiza respetando si el usuario ya escribió algo
     actualizarMetricas(productosLocales);
   } catch (error) {
     console.error('Error al obtener datos:', error);
@@ -33,16 +42,50 @@ async function cargarProductos() {
   }
 }
 
+// 2. Extraer categorías únicas para llenar el <select> automáticamente
+function poblarCategorias(productos) {
+  const categoriaSeleccionada = selectCategoria.value;
+  const categorias = [...new Set(productos.map(p => p.categoria.trim()))];
+
+  selectCategoria.innerHTML = '<option value="todas">Todas las categorías</option>';
+  categorias.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.textContent = cat;
+    selectCategoria.appendChild(option);
+  });
+
+  // Mantener la categoría si aún existe
+  if (categorias.includes(categoriaSeleccionada)) {
+    selectCategoria.value = categoriaSeleccionada;
+  }
+}
+
+// 3. Función de filtrado en tiempo real (Texto + Categoría)
+function aplicarFiltros() {
+  const texto = inputBusqueda.value.toLowerCase().trim();
+  const categoria = selectCategoria.value;
+
+  const filtrados = productosLocales.filter(prod => {
+    const coincideNombre = prod.nombre.toLowerCase().includes(texto);
+    const coincideCategoria = (categoria === 'todas') || (prod.categoria === categoria);
+    return coincideNombre && coincideCategoria;
+  });
+
+  renderizarTabla(filtrados);
+}
+
+// 4. Dibujar filas en la tabla
 function renderizarTabla(productos) {
   if (productos.length === 0) {
     tablaProductos.innerHTML = `
       <tr>
-        <td colspan="7" class="text-center py-6 text-slate-500">
-          No hay productos registrados actualmente.
+        <td colspan="7" class="text-center py-8 text-slate-500">
+          No se encontraron productos con ese criterio de búsqueda.
         </td>
       </tr>
     `;
-    badgeContador.textContent = '0 items';
+    badgeContador.textContent = '0 resultados';
     return;
   }
 
@@ -80,6 +123,7 @@ function renderizarTabla(productos) {
   }).join('');
 }
 
+// 5. Métricas globales
 function actualizarMetricas(productos) {
   const totalItems = productos.length;
   const unidadesStock = productos.reduce((acc, p) => acc + Number(p.stock), 0);
@@ -90,7 +134,11 @@ function actualizarMetricas(productos) {
   statValor.textContent = `S/ ${valorTotal.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-// Modal
+// Eventos de escucha en vivo (Input y Select)
+inputBusqueda.addEventListener('input', aplicarFiltros);
+selectCategoria.addEventListener('change', aplicarFiltros);
+
+// Control del Modal
 function abrirModal() {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
@@ -108,7 +156,7 @@ btnAbrirModal.addEventListener('click', abrirModal);
 btnCerrarModal.addEventListener('click', cerrarModal);
 btnCancelar.addEventListener('click', cerrarModal);
 
-// Preparar formulario para Editar
+// Editar producto
 window.prepararEdicion = (id) => {
   const producto = productosLocales.find(p => p.id === id);
   if (!producto) return;
@@ -123,7 +171,7 @@ window.prepararEdicion = (id) => {
   abrirModal();
 };
 
-// Eliminar producto (DELETE /api/productos/:id)
+// Eliminar producto
 window.eliminarProducto = async (id) => {
   if (!confirm(`¿Estás seguro de eliminar el producto #${id}?`)) return;
 
@@ -141,7 +189,7 @@ window.eliminarProducto = async (id) => {
   }
 };
 
-// Guardar o Actualizar (POST o PUT)
+// Guardar o Actualizar producto
 formNuevo.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -179,4 +227,5 @@ formNuevo.addEventListener('submit', async (e) => {
   }
 });
 
+// Inicio
 cargarProductos();
