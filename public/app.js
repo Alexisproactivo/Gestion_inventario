@@ -1,15 +1,18 @@
-// Referencias a elementos del DOM
+// Referencias al DOM
 const tablaProductos = document.getElementById('tabla-productos');
 const statTotal = document.getElementById('stat-total');
 const statStock = document.getElementById('stat-stock');
 const statValor = document.getElementById('stat-valor');
 const badgeContador = document.getElementById('badge-contador');
 
-// Elementos de búsqueda y filtros
 const inputBusqueda = document.getElementById('input-busqueda');
 const selectCategoria = document.getElementById('select-categoria');
 
-// Elementos del Modal
+const spanPaginaActual = document.getElementById('span-pagina-actual');
+const spanTotalPaginas = document.getElementById('span-total-paginas');
+const btnAnt = document.getElementById('btn-ant');
+const btnSig = document.getElementById('btn-sig');
+
 const modal = document.getElementById('modal-producto');
 const btnAbrirModal = document.getElementById('btn-abrir-modal');
 const btnCerrarModal = document.getElementById('btn-cerrar-modal');
@@ -18,18 +21,29 @@ const formNuevo = document.getElementById('form-nuevo-producto');
 const inputId = document.getElementById('input-id');
 const modalTitulo = modal.querySelector('h3');
 
-// Estado local de datos
-let productosLocales = [];
+// Estado de paginación
+let paginaActual = 1;
+const limitePorPagina = 5;
+let productosPagina = [];
 
-// 1. Cargar productos desde el Backend
+// 1. Cargar datos paginados desde la API
 async function cargarProductos() {
   try {
-    const respuesta = await fetch('/api/productos');
-    productosLocales = await respuesta.json();
+    const res = await fetch(`/api/productos?pagina=${paginaActual}&limite=${limitePorPagina}`);
+    const respuesta = await res.json();
 
-    poblarCategorias(productosLocales);
-    aplicarFiltros(); // Renderiza respetando si el usuario ya escribió algo
-    actualizarMetricas(productosLocales);
+    productosPagina = respuesta.datos;
+    const { totalItems, totalPaginas } = respuesta.paginacion;
+
+    // Actualizar números de paginación
+    spanPaginaActual.textContent = paginaActual;
+    spanTotalPaginas.textContent = totalPaginas || 1;
+    btnAnt.disabled = paginaActual <= 1;
+    btnSig.disabled = paginaActual >= totalPaginas || totalPaginas === 0;
+
+    poblarCategorias(productosPagina);
+    aplicarFiltros();
+    actualizarMetricas(productosPagina, totalItems);
   } catch (error) {
     console.error('Error al obtener datos:', error);
     tablaProductos.innerHTML = `
@@ -42,50 +56,49 @@ async function cargarProductos() {
   }
 }
 
-// 2. Extraer categorías únicas para llenar el <select> automáticamente
+// 2. Extraer categorías únicas
 function poblarCategorias(productos) {
-  const categoriaSeleccionada = selectCategoria.value;
+  const seleccionada = selectCategoria.value;
   const categorias = [...new Set(productos.map(p => p.categoria.trim()))];
 
   selectCategoria.innerHTML = '<option value="todas">Todas las categorías</option>';
   categorias.forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat;
-    option.textContent = cat;
-    selectCategoria.appendChild(option);
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    selectCategoria.appendChild(opt);
   });
 
-  // Mantener la categoría si aún existe
-  if (categorias.includes(categoriaSeleccionada)) {
-    selectCategoria.value = categoriaSeleccionada;
+  if (categorias.includes(seleccionada)) {
+    selectCategoria.value = seleccionada;
   }
 }
 
-// 3. Función de filtrado en tiempo real (Texto + Categoría)
+// 3. Filtrar
 function aplicarFiltros() {
   const texto = inputBusqueda.value.toLowerCase().trim();
   const categoria = selectCategoria.value;
 
-  const filtrados = productosLocales.filter(prod => {
+  const filtrados = productosPagina.filter(prod => {
     const coincideNombre = prod.nombre.toLowerCase().includes(texto);
-    const coincideCategoria = (categoria === 'todas') || (prod.categoria === categoria);
-    return coincideNombre && coincideCategoria;
+    const coincideCat = (categoria === 'todas') || (prod.categoria === categoria);
+    return coincideNombre && coincideCat;
   });
 
   renderizarTabla(filtrados);
 }
 
-// 4. Dibujar filas en la tabla
+// 4. Renderizar Filas
 function renderizarTabla(productos) {
   if (productos.length === 0) {
     tablaProductos.innerHTML = `
       <tr>
         <td colspan="7" class="text-center py-8 text-slate-500">
-          No se encontraron productos con ese criterio de búsqueda.
+          No hay productos disponibles en esta página o criterio.
         </td>
       </tr>
     `;
-    badgeContador.textContent = '0 resultados';
+    badgeContador.textContent = '0 items';
     return;
   }
 
@@ -123,9 +136,8 @@ function renderizarTabla(productos) {
   }).join('');
 }
 
-// 5. Métricas globales
-function actualizarMetricas(productos) {
-  const totalItems = productos.length;
+// 5. Métricas
+function actualizarMetricas(productos, totalItems) {
   const unidadesStock = productos.reduce((acc, p) => acc + Number(p.stock), 0);
   const valorTotal = productos.reduce((acc, p) => acc + (Number(p.precio) * Number(p.stock)), 0);
 
@@ -134,11 +146,24 @@ function actualizarMetricas(productos) {
   statValor.textContent = `S/ ${valorTotal.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-// Eventos de escucha en vivo (Input y Select)
+// Eventos de Paginación
+btnAnt.addEventListener('click', () => {
+  if (paginaActual > 1) {
+    paginaActual--;
+    cargarProductos();
+  }
+});
+
+btnSig.addEventListener('click', () => {
+  paginaActual++;
+  cargarProductos();
+});
+
+// Eventos de búsqueda
 inputBusqueda.addEventListener('input', aplicarFiltros);
 selectCategoria.addEventListener('change', aplicarFiltros);
 
-// Control del Modal
+// Modal
 function abrirModal() {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
@@ -158,7 +183,7 @@ btnCancelar.addEventListener('click', cerrarModal);
 
 // Editar producto
 window.prepararEdicion = (id) => {
-  const producto = productosLocales.find(p => p.id === id);
+  const producto = productosPagina.find(p => p.id === id);
   if (!producto) return;
 
   inputId.value = producto.id;
@@ -189,7 +214,7 @@ window.eliminarProducto = async (id) => {
   }
 };
 
-// Guardar o Actualizar producto
+// Guardar/Actualizar
 formNuevo.addEventListener('submit', async (e) => {
   e.preventDefault();
 

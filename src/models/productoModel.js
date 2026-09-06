@@ -1,10 +1,26 @@
 const pool = require('../config/db');
 
 const Producto = {
-  obtenerTodos: async () => {
-    const query = 'SELECT * FROM productos ORDER BY id ASC';
-    const { rows } = await pool.query(query);
-    return rows;
+// Obtener productos paginados y el conteo total
+  obtenerPaginados: async (limite = 5, offset = 0) => {
+    // 1. Traer la porción de datos
+    const dataQuery = `
+      SELECT * FROM productos 
+      ORDER BY id ASC 
+      LIMIT $1 OFFSET $2;
+    `;
+    const { rows: productos } = await pool.query(dataQuery, [limite, offset]);
+
+    // 2. Traer el total absoluto de filas en la tabla
+    const countQuery = 'SELECT COUNT(*) FROM productos;';
+    const { rows: countRows } = await pool.query(countQuery);
+    const total = parseInt(countRows[0].count, 10);
+
+    return {
+      productos,
+      total,
+      totalPaginas: Math.ceil(total / limite)
+    };
   },
 
   crear: async (datos) => {

@@ -3,10 +3,24 @@ const Producto = require('../models/productoModel');
 const productoController = {
   listar: async (req, res) => {
     try {
-      const productos = await Producto.obtenerTodos();
-      res.status(200).json(productos);
+      // Leemos de la URL: /api/productos?pagina=1&limite=5
+      const pagina = parseInt(req.query.pagina, 10) || 1;
+      const limite = parseInt(req.query.limite, 10) || 5;
+      const offset = (pagina - 1) * limite;
+
+      const resultado = await Producto.obtenerPaginados(limite, offset);
+
+      res.status(200).json({
+        datos: resultado.productos,
+        paginacion: {
+          totalItems: resultado.total,
+          totalPaginas: resultado.totalPaginas,
+          paginaActual: pagina,
+          limite
+        }
+      });
     } catch (error) {
-      console.error('Error al listar productos:', error);
+      console.error('Error al listar productos paginados:', error);
       res.status(500).json({ mensaje: 'Error interno del servidor al consultar productos' });
     }
   },
