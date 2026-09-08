@@ -6,5 +6,6 @@ router.get('/', productoController.listar);
 router.post('/', productoController.crear);
 router.put('/:id', productoController.actualizar);
 router.delete('/:id', productoController.eliminar);
+router.get('/auditoria/historial', productoController.obtenerHistorial);
 
 module.exports = router;
