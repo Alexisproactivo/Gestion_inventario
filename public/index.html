@@ -6,6 +6,15 @@
   <title>Sistema de Gestión de Inventario | PostgreSQL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css" />
+
+  <script>
+  // Verificar si hay una sesión guardada antes de cargar el contenido
+  const usuarioActivo = localStorage.getItem('usuario');
+  if (!usuarioActivo) {
+    window.location.replace('/login.html');
+  }
+</script>
+
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
 
