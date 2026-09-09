@@ -1,6 +1,6 @@
 # 📦 StockCore — Enterprise Inventory & Audit Management System
 
-Aplicación web Full Stack para la administración y control de inventarios empresariales en tiempo real, conectada a una base de datos relacional PostgreSQL en la nube (Neon Cloud)[cite: 1]. Diseñada bajo una **Arquitectura en Capas (Layered / MVC)**[cite: 1] y los principios de diseño **SOLID**[cite: 1], integrando trazabilidad de operaciones (Activity Logging)[cite: 1], control de acceso basado en roles (RBAC)[cite: 1] y autenticación federada con Google OAuth 2.0[cite: 1].
+Aplicación web Full Stack para la administración y control de inventarios empresariales en tiempo real, conectada a una base de datos relacional PostgreSQL en la nube (Neon Cloud). Diseñada bajo una **Arquitectura en Capas (Layered / MVC)** y los principios de diseño **SOLID**, integrando trazabilidad de operaciones (Activity Logging), control de acceso basado en roles (RBAC) y autenticación federada con Google OAuth 2.0.
 
 🔗 **Demo en Producción:** [https://gestion-inventario-r1o2.onrender.com](https://gestion-inventario-r1o2.onrender.com)
 
@@ -8,20 +8,20 @@ Aplicación web Full Stack para la administración y control de inventarios empr
 
 ## 🌟 Características Principales
 
-* **Autenticación Federada:** Inicio de sesión seguro mediante **Google OAuth 2.0**, sincronizando perfil, correo y avatar oficial del usuario[cite: 1].
+* **Autenticación Federada:** Inicio de sesión seguro mediante **Google OAuth 2.0**, sincronizando perfil, correo y avatar oficial del usuario.
 * **Control de Acceso Basado en Roles (RBAC):**
-  * Rol `admin`: Control total para crear, editar, eliminar registros y acceder a la bitácora de auditoría[cite: 1].
-  * Rol `operador` / `usuario`: Modo de solo lectura; la interfaz oculta dinámicamente los botones de modificación[cite: 1].
+  * Rol `admin`: Control total para crear, editar, eliminar registros y acceder a la bitácora de auditoría.
+  * Rol `operador` / `usuario`: Modo de solo lectura; la interfaz oculta dinámicamente los botones de modificación.
 * **Bitácora de Auditoría en Tiempo Real (Activity Log):**
-  * Trazabilidad completa de acciones (`CREACION`, `EDICION`, `ELIMINACION`)[cite: 1].
-  * Registro de marcas de tiempo normalizadas (`TIMESTAMPTZ`), usuario responsable e historial descriptivo de cambios[cite: 1].
+  * Trazabilidad completa de acciones (`CREACION`, `EDICION`, `ELIMINACION`).
+  * Registro de marcas de tiempo normalizadas (`TIMESTAMPTZ`), usuario responsable e historial descriptivo de cambios.
 * **Consultas Optimizadas en Neon (PostgreSQL):**
-  * Paginación eficiente a nivel de servidor (`LIMIT` y `OFFSET`)[cite: 1].
-  * Búsqueda dinámica global insensible a mayúsculas (`ILIKE`) combinada con filtrado relacional por categorías[cite: 1].
-  * Cálculo de agregaciones en base de datos (`COUNT`, `SUM`) para métricas globales de stock y valor monetario[cite: 1].
+  * Paginación eficiente a nivel de servidor (`LIMIT` y `OFFSET`).
+  * Búsqueda dinámica global insensible a mayúsculas (`ILIKE`) combinada con filtrado relacional por categorías.
+  * Cálculo de agregaciones en base de datos (`COUNT`, `SUM`) para métricas globales de stock y valor monetario.
 * **Interfaz Moderna (Fintech / Web3 Style):**
-  * Dashboard responsivo en Dark Mode inspirado en la estética Stakent[cite: 1].
-  * Construido con **Tailwind CSS**, modales nativos interactivos y renderizado reactivo con JavaScript Vanilla[cite: 1].
+  * Dashboard responsivo en Dark Mode inspirado en la estética Stakent.
+  * Construido con **Tailwind CSS**, modales nativos interactivos y renderizado reactivo con JavaScript Vanilla.
 
 ---
 
@@ -29,45 +29,45 @@ Aplicación web Full Stack para la administración y control de inventarios empr
 
 | Capa | Tecnologías |
 | :--- | :--- |
-| **Backend** | Node.js, Express.js (API REST modular)[cite: 1] |
-| **Base de Datos** | PostgreSQL en la nube (Neon Serverless Cloud) con pool de conexiones `pg`[cite: 1] |
-| **Autenticación** | Google OAuth 2.0[cite: 1] |
-| **Frontend** | HTML5 semántico, JavaScript Vanilla (ES6+ modular, Fetch API), Tailwind CSS[cite: 1] |
-| **Infraestructura / DevOps** | Render Cloud Platform (CI/CD continuo conectado a GitHub), Git[cite: 1] |
+| **Backend** | Node.js, Express.js (API REST modular) |
+| **Base de Datos** | PostgreSQL en la nube (Neon Serverless Cloud) con pool de conexiones `pg` |
+| **Autenticación** | Google OAuth 2.0 |
+| **Frontend** | HTML5 semántico, JavaScript Vanilla (ES6+ modular, Fetch API), Tailwind CSS |
+| **Infraestructura / DevOps** | Render Cloud Platform (CI/CD continuo conectado a GitHub), Git |
 
 ---
 
 ## 🏛️ Arquitectura del Sistema
 
-El proyecto sigue una separación estricta de responsabilidades desacoplando la capa de acceso a datos, lógica de negocio y presentación[cite: 1]:
+El proyecto sigue una separación estricta de responsabilidades desacoplando la capa de acceso a datos, lógica de negocio y presentación:
 
 ```text
 gestion_inventario/
 ├── src/
 │   ├── config/
-│   │   └── db.js                 # Pool de conexiones a PostgreSQL (Neon)[cite: 1]
+│   │   └── db.js                 # Pool de conexiones a PostgreSQL (Neon)
 │   ├── controllers/
 │   │   ├── authController.js     # Gestión de sesiones y autenticación Google OAuth
-│   │   └── productoController.js # Lógica de negocio, validaciones y orquestación de auditoría[cite: 1]
+│   │   └── productoController.js # Lógica de negocio, validaciones y orquestación de auditoría
 │   ├── models/
-│   │   ├── auditoriaModel.js     # Registro e inserción de la bitácora de auditoría[cite: 1]
-│   │   ├── productoModel.js      # Consultas SQL, paginación, filtros y métricas globales[cite: 1]
-│   │   └── usuarioModel.js       # Gestión de cuentas federadas y roles de usuario[cite: 1]
+│   │   ├── auditoriaModel.js     # Registro e inserción de la bitácora de auditoría
+│   │   ├── productoModel.js      # Consultas SQL, paginación, filtros y métricas globales
+│   │   └── usuarioModel.js       # Gestión de cuentas federadas y roles de usuario
 │   └── routes/
 │       ├── authRoutes.js         # Endpoints de autenticación y callbacks de Google
-│       └── productoRoutes.js     # Endpoints CRUD de productos y consulta de auditoría[cite: 1]
+│       └── productoRoutes.js     # Endpoints CRUD de productos y consulta de auditoría
 ├── public/
-│   ├── app.js                    # Consumo de API, manipulación del DOM, RBAC y modal de auditoría[cite: 1]
+│   ├── app.js                    # Consumo de API, manipulación del DOM, RBAC y modal de auditoría
 │   ├── bg-login.mp4              # Background multimedia de la pantalla de acceso
-│   ├── index.html                # Dashboard SPA principal (estilo Fintech/Stakent)[cite: 1]
-│   ├── login.html                # Portal de inicio de sesión con Google OAuth[cite: 1]
+│   ├── index.html                # Dashboard SPA principal (estilo Fintech/Stakent)
+│   ├── login.html                # Portal de inicio de sesión con Google OAuth
 │   └── styles.css                # Reglas de estilo y animaciones complementarias
 ├── .env                          # Variables de entorno sensibles (no versionadas)
 ├── .gitignore                    # Exclusión de credenciales y dependencias
 ├── package-lock.json
 ├── package.json
 ├── README.md                     # Documentación técnica del proyecto
-└── server.js                     # Servidor Express, middlewares y montaje de rutas[cite: 1]
+└── server.js                     # Servidor Express, middlewares y montaje de rutas
 ```
 
 ---
@@ -115,25 +115,25 @@ CREATE TABLE IF NOT EXISTS auditoria (
 
 | Método | Endpoint | Descripción |
 | :--- | :--- | :--- |
-| `GET` | `/api/productos` | Obtiene el catálogo paginado (`pagina`, `limite`), búsqueda global (`busqueda`), filtros (`categoria`) y métricas[cite: 1] |
-| `POST` | `/api/productos` | Registra un nuevo producto y genera su entrada en la auditoría[cite: 1] |
-| `PUT` | `/api/productos/:id` | Actualiza un producto existente y documenta los cambios en la bitácora[cite: 1] |
-| `DELETE` | `/api/productos/:id` | Elimina un registro y registra la baja en auditoría[cite: 1] |
+| `GET` | `/api/productos` | Obtiene el catálogo paginado (`pagina`, `limite`), búsqueda global (`busqueda`), filtros (`categoria`) y métricas |
+| `POST` | `/api/productos` | Registra un nuevo producto y genera su entrada en la auditoría |
+| `PUT` | `/api/productos/:id` | Actualiza un producto existente y documenta los cambios en la bitácora |
+| `DELETE` | `/api/productos/:id` | Elimina un registro y registra la baja en auditoría |
 
 ### Auditoría
 
 | Método | Endpoint | Descripción |
 | :--- | :--- | :--- |
-| `GET` | `/api/productos/auditoria/historial` | Consulta las últimas 30 acciones registradas cruzadas con los datos del usuario (`LEFT JOIN`)[cite: 1] |
+| `GET` | `/api/productos/auditoria/historial` | Consulta las últimas 30 acciones registradas cruzadas con los datos del usuario (`LEFT JOIN`) |
 
 ---
 
 ## 🔐 Seguridad y Buenas Prácticas
 
-* **Consultas Parametrizadas:** Protección completa contra inyecciones SQL usando marcadores posicionales (`$1`, `$2`, ...) en el driver `pg`[cite: 1].
-* **Control de Acceso en Frontend:** Guardia de sesión reactiva en `index.html` que expulsa al login si no existe token en `localStorage`[cite: 1].
-* **Sincronización de Zona Horaria:** Implementación de `TIMESTAMPTZ` en PostgreSQL y conversión a hora local (`America/Lima`) en la interfaz[cite: 1].
-* **Validación de Negocio:** Verificación estricta de campos obligatorios y rangos no negativos antes de ejecutar cualquier transacción[cite: 1].
+* **Consultas Parametrizadas:** Protección completa contra inyecciones SQL usando marcadores posicionales (`$1`, `$2`, ...) en el driver `pg`.
+* **Control de Acceso en Frontend:** Guardia de sesión reactiva en `index.html` que expulsa al login si no existe token en `localStorage`.
+* **Sincronización de Zona Horaria:** Implementación de `TIMESTAMPTZ` en PostgreSQL y conversión a hora local (`America/Lima`) en la interfaz.
+* **Validación de Negocio:** Verificación estricta de campos obligatorios y rangos no negativos antes de ejecutar cualquier transacción.
 
 ---
 
